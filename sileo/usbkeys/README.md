@@ -1,0 +1,70 @@
+# USBKeys Experimental Sileo source
+
+Add this URL in Sileo > Sources > +:
+
+https://raw.githubusercontent.com/soum91/daybreak/main/sileo/usbkeys/
+
+Install **USBKeys Experimental** on the jailbroken iPhone 13 Pro Max, iOS 16.1.1,
+Dopamine. This is an isolated flat APT source hosted beside Daybreak's source.
+
+The package is compiled and signed for arm64 iOS 16.1. App UI launch is confirmed by the user. USB HID operation and iPhone 17
+Recovery Assistant compatibility are **unverified**.
+There are no receiver-app requirements on the target. No claim is made that
+installing the package will recover a phone or preserve its iOS version.
+
+Open USBKeys, run Check USB, and test one key against a harmless text field on
+a computer before attempting the recovery screen. Stop restores the source
+phone's USB configuration when the private APIs cooperate. If restoration
+fails, disconnect and reboot the 13 Pro Max, then re-enable Dopamine.
+
+This is an unsigned APT source served over HTTPS, like the existing Daybreak
+source. The package itself is ad-hoc signed for the jailbreak environment.
+These signatures are different from APT repository signatures. Sileo import
+and installation have not been tested on a physical device.
+
+Version 0.1.1 (build 2) fixes a confirmed 0.1.0 packaging defect: the signer
+overwrote the first 16 bytes of executable code in both the app and service.
+The rebuilt binaries use the standard iOS toolchain with reserved signature
+header space. Regression checks reject the old package and confirm signing
+preserves all new code sections. The broken 0.1.0 package is withdrawn.
+
+Packaging revision **0.1.1-1** repairs the failed install shown by the user:
+`/bin/launchctl` was not found, so the USB service never started. The new
+maintainer scripts resolve the Procursus launchctl from rootless PATH, declare
+the required tools, create the runtime directory, and check socket readiness.
+Seven mocked installer cases pass. Actual device service startup is unverified.
+The signed executables and app metadata are unchanged from 0.1.1 (2); the
+in-app version remains 0.1.1 (2). This is a packaging-only rebuild.
+
+**0.1.2 (3)** fixes incomplete operation reporting. Snapshot results, phase,
+operation, full status, service version/PID and active state now appear together.
+Last result reads a diagnostic-only journal independently of the service socket;
+IPC errors identify the failing stage and errno. Keys remain disabled until a
+live successful setup response. The rootless installer corrections are retained.
+This is not a verified fix for USB keyboard operation; physical snapshot capture,
+journal/export access and HID operation remain unverified.
+
+**0.1.3 (4)** corrects the helper's IOKit class exception key and adds USB
+device access. It verifies the signed permissions and reports their runtime
+state. IOServiceOpen failures now include the exact kernel code and error class.
+The actual 20B101 kernel contains IOUSBDeviceInterfaceUserClient, and its 12 used
+dispatcher signatures match. This establishes ABI evidence, not that the user's
+open failure is resolved. Physical USB operation remains unverified.
+
+`USBKeys-0.1.5-source.zip` contains the complete source, evidence and build instructions.
+Run `python3 scripts/build_usbkeys_sileo.py` from the repository root to rebuild
+these indexes. SHA256SUMS and Release contain hashes for byte verification.
+
+**0.1.4 (5)** adds hang detection. The 0.1.2 report showed the service stuck inside
+`IOUSBDeviceControllerCreate` with no return code. Create now has a 4 s deadline;
+on timeout the service reports it, refuses further USB calls and restarts. Check USB
+and Start also list whether an `IOUSBDeviceController` service exists and which USB
+device-mode IOService classes are present (names only). Diagnostic only; the hang
+itself is not fixed.
+
+**0.1.5 (6)** adds explicit HID control-request handling, including boot/report
+protocol, idle and reports, and the native OUT status phase. Live diagnostics
+show request counters and native interface activation. The user's 0.1.4 local
+setup completed but produced no input on the target. This release fixes an
+identified code omission; target input and Recovery Assistant support remain
+unverified. Refresh Sileo and upgrade USBKeys Experimental to 0.1.5.

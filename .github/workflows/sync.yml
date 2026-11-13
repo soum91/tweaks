@@ -1,0 +1,26 @@
+name: Build Sileo catalog
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 * * * *'
+
+permissions:
+  contents: write
+
+jobs:
+  catalog:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and verify catalog
+        run: |
+          python3 scripts/build_tweaks_repo.py --sync
+          python3 -m unittest discover -s tests -p 'test_tweaks_repo.py' -v
+      - name: Publish generated files
+        run: |
+          git config user.name 'soum91 catalog bot'
+          git config user.email 'soum91@users.noreply.github.com'
+          git add sileo
+          git diff --cached --quiet || git commit -m 'Sync Sileo catalog [skip ci]'
+          git push
