@@ -30,3 +30,8 @@ mandatory for actual app/tweak changes; hosting-only updates require factual not
 index/package checks and `python3 scripts/check_version_ui.py`. The `[catalog only]`
 commit marker is reserved for changes without app/tweak implementation changes; it
 skips only the unchanged Daybreak compilation job, while catalog/version CI still runs.
+
+
+## Canonical tweak source repository (mandatory)
+
+All future iOS jailbreak tweaks and tweak-related development must live in this repository (`soum91/tweaks`) under a dedicated project directory (for example `projects/<tweak-name>/`). Keep source, build workflows, packaging metadata, documentation, and release provenance here. Do not create separate per-tweak GitHub repositories. Existing standalone tweaks should be migrated without losing source/history, package identities, working release workflows, or compatibility feeds. The `watchlink` project is designated for consolidation under `projects/watchlink/`. This supersedes the earlier instruction to keep tweak implementations in separate repositories. Both Claude and Codex must enforce this rule. Do not publish a migrated release until its build and distribution paths are verified.
