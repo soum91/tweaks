@@ -1,0 +1,82 @@
+name: WatchLink firmware analysis
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: watchlink-firmware-analysis
+  cancel-in-progress: false
+jobs:
+  extract:
+    runs-on: xcode-27
+    timeout-minutes: 45
+    env:
+      SOURCE_TREE: ad7e2b61b5ab8b4bbfa5c704fbfaaf68b6812942
+    steps:
+      - name: Verify extraction host
+        run: |
+          sw_vers
+          test "$(sw_vers -productVersion | cut -d. -f1)" -ge 27
+          command -v aa
+          df -h .
+      - name: Fetch reviewed research source without credentials
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import base64, hashlib, json, os, pathlib, urllib.request
+          def api(path):
+              return json.load(urllib.request.urlopen('https://api.github.com/repos/soum91/tweaks/git/' + path, timeout=45))
+          tree = api('trees/' + os.environ['SOURCE_TREE'] + '?recursive=1')
+          assert tree['sha'] == os.environ['SOURCE_TREE'] and not tree.get('truncated')
+          for entry in tree['tree']:
+              if entry['type'] != 'blob':
+                  continue
+              path = pathlib.Path(entry['path'])
+              assert str(path).startswith('projects/watchlink/research/') and '..' not in path.parts
+              assert entry['mode'] == '100644'
+              blob = api('blobs/' + entry['sha'])
+              data = base64.b64decode(blob['content'])
+              assert hashlib.sha1(b'blob ' + str(len(data)).encode() + b'\0' + data).hexdigest() == entry['sha']
+              path.parent.mkdir(parents=True, exist_ok=True)
+              path.write_bytes(data)
+          PY
+      - name: Install checksum-verified ipsw
+        shell: bash
+        run: |
+          mkdir -p tool reports
+          python3 - <<'PY'
+          import hashlib, pathlib, tarfile, urllib.request
+          release = '3.1.746'
+          name = 'ipsw_' + release + '_macOS_universal.tar.gz'
+          base = 'https://github.com/blacktop/ipsw/releases/download/v' + release + '/'
+          checks = urllib.request.urlopen(base + 'checksums.txt', timeout=45).read().decode()
+          expected = next(line.split()[0] for line in checks.splitlines() if line.split()[-1] == name)
+          data = urllib.request.urlopen(base + name, timeout=90).read()
+          assert hashlib.sha256(data).hexdigest() == expected
+          archive = pathlib.Path('tool') / name
+          archive.write_bytes(data)
+          with tarfile.open(archive) as package:
+              pathlib.Path('tool/ipsw').write_bytes(package.extractfile(package.getmember('ipsw')).read())
+          pathlib.Path('tool/ipsw').chmod(0o755)
+          pathlib.Path('reports/tool-checksum.txt').write_text(name + ' SHA256 ' + expected + '\n')
+          PY
+          python3 -m pip install --target tool/python capstone==5.0.9
+          tool/ipsw version
+      - name: Acquire and extract exact Watch build
+        shell: bash
+        run: |
+          set -o pipefail
+          python3 projects/watchlink/research/extract_watchos.py --ipsw tool/ipsw --work fw-work --build 24S5091f --device Watch7,9 2>&1 | tee reports/extraction.log
+      - name: Collect migration and unpairing code
+        shell: bash
+        run: |
+          set -o pipefail
+          PYTHONPATH=tool/python python3 projects/watchlink/research/collect_watchos.py --ipsw "$PWD/tool/ipsw" --work fw-work --reports reports 2>&1 | tee reports/analysis.log
+      - name: Upload static research output only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: WatchLink-watchOS-24S5091f-static-analysis
+          path: reports/
+          retention-days: 7
+          if-no-files-found: error
