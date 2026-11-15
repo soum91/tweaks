@@ -11,7 +11,7 @@ jobs:
     runs-on: xcode-27
     timeout-minutes: 45
     env:
-      SOURCE_TREE: fdfbfe3e84e42e50dd8e6aa63880ef6ed3ab5052
+      SOURCE_TREE: ecd7860bc9dfc4c34d7bda76fd89534d6032e7c5
     steps:
       - name: Verify extraction host
         run: |
