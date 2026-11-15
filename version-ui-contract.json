@@ -1,0 +1,1 @@
+{"schema_version":1,"targets":[{"name":"LuminAOD","sources":["projects/luminaod/src/Shared.h","projects/luminaod/src/App.m"],"required_evidence":["Info.plist","CFBundleShortVersionString","CFBundleVersion","c.detailTextLabel.text=LAVersion()"]}]}

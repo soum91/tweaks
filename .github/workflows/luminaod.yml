@@ -1,0 +1,59 @@
+name: Build LuminAOD
+on:
+  push:
+    branches: [main]
+    paths: ['projects/luminaod/**', '.github/workflows/luminaod.yml', 'version-ui-contract.json', 'scripts/check_version_ui.py']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: luminaod-main
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: macos-15-intel
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install packaging dependencies
+        run: |
+          brew install dpkg ldid
+          python3 -m pip install Pillow
+      - name: Use iOS 16.5 SDK with modern Apple arm64e compiler
+        run: |
+          mkdir -p build
+          git clone --depth 1 https://github.com/theos/sdks.git build/sdks
+          git -C build/sdks fetch --depth 1 origin 0222fd5413cf4b9af096f37b4621afa2688572f7
+          git -C build/sdks checkout 0222fd5413cf4b9af096f37b4621afa2688572f7
+          echo "SDKROOT=$GITHUB_WORKSPACE/build/sdks/iPhoneOS16.5.sdk" >> "$GITHUB_ENV"
+          echo "CC=$(xcrun --find clang)" >> "$GITHUB_ENV"
+          echo "LIPO=$(xcrun --find lipo)" >> "$GITHUB_ENV"
+          echo "LDID=$(command -v ldid)" >> "$GITHUB_ENV"
+      - name: Verify and compile
+        run: |
+          python3 scripts/check_version_ui.py
+          python3 -m unittest discover -s projects/luminaod/tests -v
+          bash projects/luminaod/scripts/build.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: LuminAOD-0.1.0
+          path: projects/luminaod/dist/*.deb
+      - name: Publish verified package and combined Sileo catalog
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p sileo/local
+          cp projects/luminaod/dist/*.deb sileo/local/com.soum91.luminaod_0.1.0_iphoneos-arm64.deb
+          python3 projects/luminaod/scripts/register_catalog.py
+          python3 scripts/build_tweaks_repo.py
+          python3 -m unittest discover -s tests -p 'test_tweaks_repo.py' -v
+          gh release create luminaod-v0.1.0 --target "$GITHUB_SHA" --title 'LuminAOD 0.1.0 (experimental)' --notes-file projects/luminaod/RELEASE_NOTES.md projects/luminaod/dist/*.deb
+          git config user.name soum91
+          git config user.email soum91@users.noreply.github.com
+          git add sileo
+          git commit -m 'Publish verified LuminAOD 0.1.0 package and catalog [skip ci]'
+          git pull --rebase origin main
+          git push origin HEAD:main

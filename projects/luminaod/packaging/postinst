@@ -1,0 +1,4 @@
+#!/bin/sh
+set -e
+if [ -x /var/jb/usr/bin/uicache ]; then /var/jb/usr/bin/uicache -p /var/jb/Applications/LuminAOD.app; fi
+exit 0

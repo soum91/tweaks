@@ -8,8 +8,8 @@ Add this source in Sileo:
 
 The `sileo/` directory contains the generated APT indexes, verified package
 artifacts, checksums, and the source metadata used to refresh the catalog.
-The package projects remain in their own repositories; this repository is the
-stable distribution point. The former Daybreak-hosted catalog remains as a
+New tweak projects live under `projects/` in this repository. Existing packages
+retain their compatibility sources while they migrate. The former Daybreak-hosted catalog remains as a
 compatibility mirror while clients migrate.
 
 ## Local rebuild
@@ -18,3 +18,7 @@ compatibility mirror while clients migrate.
 python3 scripts/build_tweaks_repo.py
 python3 -m unittest discover -s tests -p 'test_tweaks_repo.py' -v
 ```
+
+## Projects
+
+- [LuminAOD](projects/luminaod/): experimental native AOD support hooks, live lock-screen fallback, and reversible runtime MobileGestalt editor for iPhone 13 Pro Max / iOS 16.1.1.
