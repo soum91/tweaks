@@ -35,6 +35,17 @@
       "sha256": "aa2f971e297902d87b78b1b880dde86474bb4fa66bdba99edbd4db75106a0813"
     },
     {
+      "package": "com.soum91.luminaod",
+      "name": "LuminAOD",
+      "version": "0.1.0",
+      "architecture": "iphoneos-arm64",
+      "source": "LuminAOD",
+      "upstream_url": "https://raw.githubusercontent.com/soum91/tweaks/main/sileo/local/com.soum91.luminaod_0.1.0_iphoneos-arm64.deb",
+      "filename": "debs/com.soum91.luminaod_0.1.0_2e792a046f64.deb",
+      "size": 36280,
+      "sha256": "2e792a046f64842e8c9026830ba1e72c2e289bd65c4bffb4221f3c3c5e867b74"
+    },
+    {
       "package": "com.soum91.reynarddefault",
       "name": "Reynard Default Browser",
       "version": "0.1.0.13",

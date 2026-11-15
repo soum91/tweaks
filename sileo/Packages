@@ -45,6 +45,21 @@ Size: 5638
 MD5sum: 4862e6da69a891fe1a2bc3611e315b10
 SHA256: aa2f971e297902d87b78b1b880dde86474bb4fa66bdba99edbd4db75106a0813
 
+Package: com.soum91.luminaod
+Name: LuminAOD
+Version: 0.1.0
+Architecture: iphoneos-arm64
+Description: Experimental native iOS 16 AOD unlock, live lock screen fallback and reversible runtime MobileGestalt editor for iPhone 13 Pro Max 16.1.1.
+Maintainer: soum91
+Author: soum91
+Section: Tweaks
+Depends: firmware (>= 16.1.1), firmware (<< 16.1.2), ellekit
+Homepage: https://github.com/soum91/tweaks/tree/main/projects/luminaod
+Filename: debs/com.soum91.luminaod_0.1.0_2e792a046f64.deb
+Size: 36280
+MD5sum: 05c633bb5b64e3caa083e524eb637c2e
+SHA256: 2e792a046f64842e8c9026830ba1e72c2e289bd65c4bffb4221f3c3c5e867b74
+
 Package: com.soum91.reynarddefault
 Name: Reynard Default Browser
 Description: Opens web links from other apps in Reynard instead of Safari (experimental)
