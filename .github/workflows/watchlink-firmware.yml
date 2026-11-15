@@ -19,13 +19,16 @@ jobs:
           test "$(sw_vers -productVersion | cut -d. -f1)" -ge 27
           command -v aa
           df -h .
-      - name: Fetch reviewed research source without credentials
+      - name: Fetch reviewed research source with read-only API access
+        env:
+          WATCHLINK_READ_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           python3 - <<'PY'
           import base64, hashlib, json, os, pathlib, urllib.request
           def api(path):
-              return json.load(urllib.request.urlopen('https://api.github.com/repos/soum91/tweaks/git/' + path, timeout=45))
+              request = urllib.request.Request('https://api.github.com/repos/soum91/tweaks/git/' + path, headers={'Authorization': 'Bearer ' + os.environ['WATCHLINK_READ_TOKEN']})
+              return json.load(urllib.request.urlopen(request, timeout=45))
           tree = api('trees/' + os.environ['SOURCE_TREE'] + '?recursive=1')
           assert tree['sha'] == os.environ['SOURCE_TREE'] and not tree.get('truncated')
           for entry in tree['tree']:
