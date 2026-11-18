@@ -30,6 +30,16 @@ class AppVaultReleaseTests(unittest.TestCase):
         self.assertEqual(digest, hashlib.sha256(b"example").hexdigest())
         self.assertEqual(url, "https://github.com/soum91/AppVault/releases/download/v0.6.0/AppVault-0.6.0-rootless.deb")
 
+    def test_accepts_build_numbered_asset_names(self):
+        named = release("0.6.7", name="AppVault-0.6.7-20-rootless.deb",
+                        browser_download_url="https://github.com/soum91/AppVault/releases/download/v0.6.7/AppVault-0.6.7-20-rootless.deb")
+        v, url, _, _ = sync.select_release([named, release("0.6.5")])
+        self.assertEqual(v, "0.6.7")
+        self.assertEqual(url, "https://github.com/soum91/AppVault/releases/download/v0.6.7/AppVault-0.6.7-20-rootless.deb")
+        wrong_tag = release("0.6.7", name="AppVault-0.6.8-20-rootless.deb")
+        with self.assertRaises(ValueError):
+            sync.select_release([wrong_tag])
+
     def test_excludes_drafts_and_nonmatching_assets(self):
         draft = release()
         draft["draft"] = True

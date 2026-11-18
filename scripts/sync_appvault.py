@@ -18,7 +18,8 @@ API = "https://api.github.com/repos/soum91/AppVault/releases?per_page=30"
 SOURCE = "soum91/AppVault"
 PACKAGE = "com.soum91.appvault"
 MAX_BYTES = 16 * 1024 * 1024
-ASSET = re.compile(r"^AppVault-(\d+\.\d+\.\d+)-rootless\.deb$")
+# Since 0.6.6 the asset name carries the build number: AppVault-0.6.7-20-rootless.deb.
+ASSET = re.compile(r"^AppVault-(\d+\.\d+\.\d+)(?:-\d+)?-rootless\.deb$")
 
 
 def request_bytes(url, maximum):
