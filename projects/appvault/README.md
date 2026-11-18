@@ -27,3 +27,13 @@ The hourly catalog job follows upstream releases without re-signing or
 silently replacing existing package versions. The app and its main source
 remain in AppVault; this directory documents the Sileo distribution
 integration and does not pretend the full application was migrated.
+
+
+## iOS 16 storage correction (v0.6.0)
+
+The upstream 0.6.0 rootless DEB installs a dedicated mobile-owned directory under
+`/var/mobile/Library/Application Support/com.soum91.appvault` for pinned
+authentication resources and IPA exports. Its login flow now validates write
+access and identifies the stage of any filesystem error. The normal IPA uses
+its sandbox storage. This is a source and CI-verified fix; device testing of
+Apple Account login and FairPlay decryption remains necessary.
