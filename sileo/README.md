@@ -8,16 +8,16 @@ It includes AppVault (rootless jailbreak package), Daybreak, USBKeys, Timbre Aud
 HomePod Bridge, its homed Capability Bridge experiment, Reynard Default Browser,
 WebKit Patch and LuminAOD.
 
-## AppVault 0.6.3 jailbreak build
+## AppVault 0.6.4 jailbreak build
 
 The AppVault rootless DEB (`com.soum91.appvault`) contains **IPAs > Decrypt Installed Apps (Jailbreak)**.
 It uses dedicated mobile-owned application storage to address the iOS 16
 `NSCocoaErrorDomain 513` sign-in filesystem permission failure. Version 0.6.1
 also shows the authentication component being checked/downloaded and limits
-stalled network requests. Version 0.6.2 also reveals the locally generated signer error instead of the opaque AppVaultToolError code 0. Version 0.6.3 adds manual six-digit Apple verification-code entry on the rootless Account screen, matching the stock IPA flow. A trusted-device push requires a real Apple challenge. Install or
+stalled network requests. Version 0.6.2 also reveals the locally generated signer error instead of the opaque AppVaultToolError code 0. Version 0.6.3 adds manual six-digit Apple verification-code entry. Version 0.6.4 keeps the iOS 16 SAP/WebKit signer visibly attached, avoids resetting its active loopback server during memory warnings, and records safe runtime failure stages. A trusted-device push still requires a real Apple challenge. Install or
 upgrade it through this shared Sileo source; the normal sideloaded IPA lacks
 the privileged installed-app decryption capability. Release:
-https://github.com/soum91/AppVault/releases/tag/v0.6.3
+https://github.com/soum91/AppVault/releases/tag/v0.6.4
 
 CI compilation and package-integrity checks passed. Apple Account sign-in
 and FairPlay decryption have not been confirmed successful on a physical
