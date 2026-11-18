@@ -47,7 +47,7 @@
     },
     {
       "name": "AppVault",
-      "local_deb": "sileo/local/com.soum91.appvault_0.6.8_iphoneos-arm64.deb",
+      "local_deb": "sileo/local/com.soum91.appvault_0.6.9_iphoneos-arm64.deb",
       "packages": [
         "com.soum91.appvault"
       ]

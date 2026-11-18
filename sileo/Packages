@@ -1,6 +1,6 @@
 Package: com.soum91.appvault
 Name: AppVault
-Version: 0.6.8
+Version: 0.6.9
 Architecture: iphoneos-arm64
 Description: App Store IPA downloads and privileged installed-app decryption/export.
  Experimental decryption backend; device validation required.
@@ -8,10 +8,10 @@ Maintainer: soum91
 Author: soum91
 Section: Utilities
 Depends: firmware (>= 16.0)
-Filename: debs/com.soum91.appvault_0.6.8_8619f9f716f1.deb
-Size: 898996
-MD5sum: c7fdd08bb2eae4cfcd06ecaad96e023e
-SHA256: 8619f9f716f1668ff0052820789d11bd0ff77f01ecae805303c14c1613048d3c
+Filename: debs/com.soum91.appvault_0.6.9_a97bf5eb0528.deb
+Size: 899178
+MD5sum: 86c0bddba230896d470f60bc402593d4
+SHA256: a97bf5eb052865ee0f6334208c2ea1260e00a03ac06f7e00366d6b04157e56d6
 
 Package: com.soum91.daybreak.tweak
 Name: Daybreak (Dopamine)
