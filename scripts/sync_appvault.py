@@ -6,6 +6,7 @@ The main catalog generator subsequently validates Debian metadata and indexes it
 """
 import hashlib
 import json
+import os
 from pathlib import Path
 import re
 import subprocess
@@ -21,11 +22,19 @@ ASSET = re.compile(r"^AppVault-(\d+\.\d+\.\d+)-rootless\.deb$")
 
 
 def request_bytes(url, maximum):
-    request = urllib.request.Request(url, headers={
+    headers = {
         "User-Agent": "soum91-tweaks-sync",
         "Accept": "application/vnd.github+json" if url == API else "application/octet-stream",
         "Cache-Control": "no-cache",
-    })
+    }
+    # Public API calls without credentials hit shared low GitHub rate limits.
+    # Only attach the Actions token to our exact GitHub API URL, never to
+    # release redirects or third-party CDN addresses.
+    if url == API:
+        token = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
+        if token:
+            headers["Authorization"] = "Bearer " + token
+    request = urllib.request.Request(url, headers=headers)
     with urllib.request.urlopen(request, timeout=45) as response:
         data = response.read(maximum + 1)
     if len(data) > maximum:
