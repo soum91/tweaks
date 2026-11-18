@@ -23,7 +23,7 @@ ASSET = re.compile(r"^AppVault-(\d+\.\d+\.\d+)-rootless\.deb$")
 def request_bytes(url, maximum):
     request = urllib.request.Request(url, headers={
         "User-Agent": "soum91-tweaks-sync",
-        "Accept": "application/octet-stream",
+        "Accept": "application/vnd.github+json" if url == API else "application/octet-stream",
         "Cache-Control": "no-cache",
     })
     with urllib.request.urlopen(request, timeout=45) as response:
