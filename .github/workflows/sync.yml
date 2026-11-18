@@ -2,21 +2,33 @@ name: Build Sileo catalog
 
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/sync.yml'
+      - 'scripts/sync_appvault.py'
+      - 'sileo/sources.json'
   schedule:
     - cron: '17 * * * *'
 
 permissions:
   contents: write
 
+concurrency:
+  group: shared-sileo-catalog
+  cancel-in-progress: false
+
 jobs:
   catalog:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Sync verified AppVault rootless release
+        run: python3 scripts/sync_appvault.py
       - name: Build and verify catalog
         run: |
+          python3 scripts/check_version_ui.py
           python3 scripts/build_tweaks_repo.py --sync
-          python3 -m unittest discover -s tests -p 'test_tweaks_repo.py' -v
+          python3 -m unittest discover -s tests -p 'test_*.py' -v
       - name: Publish generated files
         run: |
           git config user.name 'soum91 catalog bot'
