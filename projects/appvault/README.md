@@ -1,39 +1,53 @@
-# AppVault (rootless jailbreak package)
+# AppVault Decryptor (rootless Sileo package)
 
-**Distribution:** The canonical Sileo source is
-`https://raw.githubusercontent.com/soum91/tweaks/main/sileo/`.
-The shared catalog mirrors the official AppVault rootless DEB, retaining its
-original package identity, signing, bytes, dependencies, maintainer and version.
+**Sileo source:** https://raw.githubusercontent.com/soum91/tweaks/main/sileo/
 
-**Upstream implementation:** https://github.com/soum91/AppVault
+**Upstream:** https://github.com/soum91/AppVault
 
-**Upstream release:** https://github.com/soum91/AppVault/releases
+**Release:** https://github.com/soum91/AppVault/releases/tag/v0.6.5
 
-**Install:** Add soum91 Tweaks to Sileo, refresh sources and install
-`com.soum91.appvault`. On the jailbroken device, open AppVault and select
-**IPAs > Decrypt Installed Apps (Jailbreak)**.
+**Package ID:** `com.soum91.appvault` (preserved for existing Sileo upgrades)
 
-**Limits:** The ordinary FlareStore/sideloaded IPA is not a privileged jailbreak
-package. AppVault downloads Apple-supplied encrypted IPAs by default; the
-privileged rootless DEB provides a separate installed-app decryption/export path.
-Physical-device FairPlay decryption and export remain unverified. A matching
-Apple Account license and appropriate iOS compatibility are still required.
+**Installed app bundle:** `com.soum91.appvault.decryptor` (new separate rootless app)
 
-**Publishing:** `scripts/sync_appvault.py` verifies the latest published
-AppVault rootless GitHub release's SHA-256 and Debian control metadata, and
-updates `sileo/sources.json` and `sileo/local/`. Then
-`scripts/build_tweaks_repo.py --sync` builds the complete combined index.
-The hourly catalog job follows upstream releases without re-signing or
-silently replacing existing package versions. The app and its main source
-remain in AppVault; this directory documents the Sileo distribution
-integration and does not pretend the full application was migrated.
+## Why two applications?
 
+The old 0.6.4 privileged rootless AppVault's WebKit WebContent process terminated
+before it could load the SAP signing page on the user's Dopamine/iOS 16.1.1
+device. That prevented Apple Account login before 2FA, independently of the
+verification-code field.
 
-## iOS 16 storage correction (v0.6.0)
+From 0.6.5, Sileo installs only the privileged **AppVault Decryptor**
+application. It scans installed user apps, creates independent decrypted copies
+where authorized and technically possible, verifies output and exports IPA
+files. Its native build does not include the Apple Store authentication client,
+WebKit, or the SAP/WASM runtime.
 
-The upstream 0.6.0 rootless DEB installs a dedicated mobile-owned directory under
-`/var/mobile/Library/Application Support/com.soum91.appvault` for pinned
-authentication resources and IPA exports. Its login flow now validates write
-access and identifies the stage of any filesystem error. The normal IPA uses
-its sandbox storage. This is a source and CI-verified fix; device testing of
-Apple Account login and FairPlay decryption remains necessary.
+Separately, the ordinary **AppVault IPA** (bundle `com.soum91.appvault`)
+retains the sandboxed Apple Account login, Store search, authorized IPA
+downloads and stock decryption-helper preparation. Install it through a normal
+iOS sideloader such as FlareStore or EmberSign. The two apps intentionally have
+different bundle identifiers and distinct icons. No credential relay is used.
+
+The ordinary Store IPA and rootless Decryptor **do not** automatically share
+sessions or downloaded files. Decryptor handles eligible apps **already
+installed** on the same jailbroken phone; it does not decrypt an uninstalled,
+newer-version App Store download.
+
+**Device testing:** Native GitHub compilation and distribution integrity are
+verified. Working Apple sign-in and FairPlay decryption on a physical device
+remain unverified. No 2FA/DRM circumvention is claimed.
+
+## Publishing
+
+`scripts/sync_appvault.py` verifies the newest AppVault rootless DEB GitHub
+release SHA-256, Debian version, package identity and maintainer, then mirrors
+the original, unmodified package into `sileo/local`. The shared catalog
+includes its content hash and retains old packages for cached Sileo indexes.
+
+## Existing data
+
+Upgrading package `com.soum91.appvault` updates its rootless icon from
+`AppVault.app` to `AppVaultDecryptor.app` without touching the separately
+sideloaded AppVault IPA or the existing rootless export directory at
+`/var/mobile/Library/Application Support/com.soum91.appvault/Exports`.
