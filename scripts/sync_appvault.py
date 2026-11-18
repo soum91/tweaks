@@ -62,12 +62,17 @@ def check_control(blob, expected_version):
         file.write(blob)
         file.flush()
         fields = ["Package", "Version", "Architecture", "Maintainer", "Author"]
-        values = subprocess.check_output(
+        lines = subprocess.check_output(
             ["dpkg-deb", "-f", file.name, *fields], text=True
         ).splitlines()
-    if len(values) != len(fields):
+    actual = {}
+    for line in lines:
+        key, sep, value = line.partition(":")
+        if not sep or key not in fields or key in actual:
+            raise ValueError("Malformed AppVault Debian metadata")
+        actual[key] = value.strip()
+    if set(actual) != set(fields):
         raise ValueError("Incomplete AppVault Debian metadata")
-    actual = dict(zip(fields, values))
     expected = dict(Package=PACKAGE, Version=expected_version,
                     Architecture="iphoneos-arm64", Maintainer="soum91", Author="soum91")
     if actual != expected:
