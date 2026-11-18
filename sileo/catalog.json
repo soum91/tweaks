@@ -4,13 +4,13 @@
     {
       "package": "com.soum91.appvault",
       "name": "AppVault",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "architecture": "iphoneos-arm64",
       "source": "AppVault",
-      "upstream_url": "https://raw.githubusercontent.com/soum91/tweaks/main/sileo/local/com.soum91.appvault_0.5.0_iphoneos-arm64.deb",
-      "filename": "debs/com.soum91.appvault_0.5.0_1895662db39d.deb",
-      "size": 548956,
-      "sha256": "1895662db39d5ef44294a3ad2b36a057db6360367fe1f142b98e08c14c2e3e6c"
+      "upstream_url": "https://raw.githubusercontent.com/soum91/tweaks/main/sileo/local/com.soum91.appvault_0.6.0_iphoneos-arm64.deb",
+      "filename": "debs/com.soum91.appvault_0.6.0_253de9c93758.deb",
+      "size": 822592,
+      "sha256": "253de9c937582b49a93c22c531b8a1228f042b27757c0d876491abf8be213a21"
     },
     {
       "package": "com.soum91.daybreak.tweak",
