@@ -38,4 +38,7 @@ jobs:
           git config user.email 'soum91@users.noreply.github.com'
           git add sileo
           git diff --cached --quiet || git commit -m 'Sync Sileo catalog [skip ci]'
-          git push
+          # A noncatalog documentation commit may land after this job checked
+          # out main. Rebase our verified generated catalog, never force-push.
+          git pull --rebase origin main
+          git push origin HEAD:main
