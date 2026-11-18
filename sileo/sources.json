@@ -44,6 +44,13 @@
       "packages": [
         "com.soum91.luminaod"
       ]
+    },
+    {
+      "name": "AppVault",
+      "local_deb": "sileo/local/com.soum91.appvault_0.5.0_iphoneos-arm64.deb",
+      "packages": [
+        "com.soum91.appvault"
+      ]
     }
   ]
 }
