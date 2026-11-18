@@ -4,24 +4,33 @@ Add this source in Sileo:
 
 https://raw.githubusercontent.com/soum91/tweaks/main/sileo/
 
-It includes AppVault (rootless jailbreak package), Daybreak, USBKeys, Timbre Audio,
+It includes AppVault Decryptor (rootless jailbreak package), Daybreak, USBKeys, Timbre Audio,
 HomePod Bridge, its homed Capability Bridge experiment, Reynard Default Browser,
 WebKit Patch and LuminAOD.
 
-## AppVault 0.6.4 jailbreak build
+## AppVault 0.6.5: separate rootless Decryptor and sandboxed Store client
 
-The AppVault rootless DEB (`com.soum91.appvault`) contains **IPAs > Decrypt Installed Apps (Jailbreak)**.
-It uses dedicated mobile-owned application storage to address the iOS 16
-`NSCocoaErrorDomain 513` sign-in filesystem permission failure. Version 0.6.1
-also shows the authentication component being checked/downloaded and limits
-stalled network requests. Version 0.6.2 also reveals the locally generated signer error instead of the opaque AppVaultToolError code 0. Version 0.6.3 adds manual six-digit Apple verification-code entry. Version 0.6.4 keeps the iOS 16 SAP/WebKit signer visibly attached, avoids resetting its active loopback server during memory warnings, and records safe runtime failure stages. A trusted-device push still requires a real Apple challenge. Install or
-upgrade it through this shared Sileo source; the normal sideloaded IPA lacks
-the privileged installed-app decryption capability. Release:
-https://github.com/soum91/AppVault/releases/tag/v0.6.4
+The existing Sileo package **`com.soum91.appvault`** now installs a separate
+**AppVault Decryptor** application (`com.soum91.appvault.decryptor`). Its
+installed-app scanning, Mach-O decryption and IPA export remain privileged.
+It does **not** run `WKWebView`, local Apple SAP signing, Apple Account login or
+App Store downloads. This avoids the `WEB_CONTENT_EXIT` failures observed on
+a Dopamine/iOS 16.1.1 privileged app before any Apple 2FA response.
 
-CI compilation and package-integrity checks passed. Apple Account sign-in
-and FairPlay decryption have not been confirmed successful on a physical
-Dopamine iPhone. For new failures, open Settings > Backend Report.
+Install the **ordinary sandboxed AppVault IPA** (`com.soum91.appvault`) from
+FlareStore/EmberSign to sign in and download account-authorized encrypted IPAs.
+The Sileo Decryptor is a distinct icon. They do not automatically exchange
+sessions or downloaded files. Installed-app decryption works on eligible apps
+already installed on the jailbroken device and is not a method to decrypt an
+uninstalled newer-version IPA.
+
+Upgrade the rootless DEB through this Sileo source; it replaces the former
+privileged AppVault.app icon without removing an ordinary sideloaded IPA.
+Upstream release: https://github.com/soum91/AppVault/releases/tag/v0.6.5
+
+The native iOS build and integrity checks passed, but login on the sandboxed
+IPA and real-device decrypted export have not been independently verified.
+
 Package identities, versions, dependencies, experimental labels and exact signed
 binary bytes are retained. Hosting adds no claim of hardware compatibility.
 The old USBKeys, Timbre, HomePodBridge and Reynard sources still work. After the
