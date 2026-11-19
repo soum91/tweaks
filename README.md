@@ -22,3 +22,5 @@ python3 -m unittest discover -s tests -p 'test_tweaks_repo.py' -v
 ## Projects
 
 - [LuminAOD](projects/luminaod/): experimental native AOD support hooks, live lock-screen fallback, and reversible runtime MobileGestalt editor for iPhone 13 Pro Max / iOS 16.1.1.
+
+- [ChatGPT Legacy 16](projects/chatgpt16/): experimental native 2024-client compatibility bridges; distinct from the unfinished 2026 binary backport (not published to Sileo).

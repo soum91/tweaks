@@ -1,0 +1,10 @@
+Package: com.soum91.chatgptlegacy16
+Name: ChatGPT Legacy 16 Native Bridge
+Version: 0.1.0
+Architecture: iphoneos-arm64
+Description: Experimental native compatibility bridge for official ChatGPT 1.2024.200 on iOS 16.1.1; not a 2026 binary port.
+Maintainer: soum91
+Author: soum91
+Section: Tweaks
+Depends: mobilesubstrate
+Conflicts: com.liam.chatgbefree

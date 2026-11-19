@@ -1,0 +1,50 @@
+name: ChatGPT Legacy 16 native bridge (build validation)
+
+on:
+  push:
+    paths:
+      - 'projects/chatgpt16/**'
+      - '.github/workflows/chatgpt16.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  rootless-build:
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate source and repository contracts
+        run: |
+          python3 -m unittest discover -s projects/chatgpt16/tests -p 'test_contract.py' -v
+          python3 scripts/check_version_ui.py
+      - name: Install packaging toolchain
+        run: |
+          brew install dpkg ldid
+          git clone --depth 1 --recursive https://github.com/theos/theos.git "$RUNNER_TEMP/theos"
+          mkdir -p "$RUNNER_TEMP/theos/sdks"
+          ln -s "$(xcrun --sdk iphoneos --show-sdk-path)" "$RUNNER_TEMP/theos/sdks/$(basename "$(xcrun --sdk iphoneos --show-sdk-path)")"
+      - name: Compile and package rootless tweak
+        env:
+          THEOS: ${{ runner.temp }}/theos
+        run: make -C projects/chatgpt16 clean package
+      - name: Verify package metadata and retained GPL source
+        run: |
+          python3 - <<'PY'
+          import glob,subprocess
+          files=glob.glob('projects/chatgpt16/packages/*.deb')
+          assert files, 'No .deb produced'
+          for f in files:
+              pkg=subprocess.check_output(['dpkg-deb','-f',f,'Package'],text=True).strip()
+              arch=subprocess.check_output(['dpkg-deb','-f',f,'Architecture'],text=True).strip()
+              assert pkg=='com.soum91.chatgptlegacy16', (f,pkg)
+              assert arch=='iphoneos-arm64', (f,arch)
+              print('Verified',f,pkg,arch)
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: chatgptlegacy16-rootless-unverified
+          path: projects/chatgpt16/packages/*.deb
+          if-no-files-found: error
