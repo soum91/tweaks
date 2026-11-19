@@ -51,6 +51,13 @@
       "packages": [
         "com.soum91.appvault"
       ]
+    },
+    {
+      "name": "ChatGPT Legacy 16 (experimental)",
+      "local_deb": "sileo/local/com.soum91.chatgptlegacy16_0.1.0_iphoneos-arm64.deb",
+      "packages": [
+        "com.soum91.chatgptlegacy16"
+      ]
     }
   ]
 }

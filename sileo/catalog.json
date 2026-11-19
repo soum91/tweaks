@@ -13,6 +13,17 @@
       "sha256": "7b5d8e295397ca6a9c589d617323f6f8e8788024f67427bf3bf6cf4158d6ad08"
     },
     {
+      "package": "com.soum91.chatgptlegacy16",
+      "name": "ChatGPT Legacy 16 Native Bridge",
+      "version": "0.1.0",
+      "architecture": "iphoneos-arm64",
+      "source": "ChatGPT Legacy 16 (experimental)",
+      "upstream_url": "https://raw.githubusercontent.com/soum91/tweaks/main/sileo/local/com.soum91.chatgptlegacy16_0.1.0_iphoneos-arm64.deb",
+      "filename": "debs/com.soum91.chatgptlegacy16_0.1.0_32e6102c049e.deb",
+      "size": 70602,
+      "sha256": "32e6102c049e0e3a512ae8c9b8c418b142c1bfeafaf9d4ea9672b67d656e7e9b"
+    },
+    {
       "package": "com.soum91.daybreak.tweak",
       "name": "Daybreak (Dopamine)",
       "version": "0.2.14",

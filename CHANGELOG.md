@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased (ChatGPT Legacy 16 native bridge source, 2026-11-19)
+## [chatgptlegacy16-v0.1.0] - 2026-11-19 (experimental rootless build; device unverified)
 
 - Import the GPLv3 ChatGBeFree 2.4.0 compatibility source and tests under `projects/chatgpt16/` with upstream attribution.
 - Create a separate rootless package identity and iOS 16.1 target, plus a macOS compile/package validation workflow without publishing a release.

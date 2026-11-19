@@ -13,6 +13,22 @@ Size: 1249226
 MD5sum: 583f9d6ddf7ada1c58aea3478175f156
 SHA256: 7b5d8e295397ca6a9c589d617323f6f8e8788024f67427bf3bf6cf4158d6ad08
 
+Package: com.soum91.chatgptlegacy16
+Name: ChatGPT Legacy 16 Native Bridge
+Description: Experimental native compatibility bridge for official ChatGPT 1.2024.200 on iOS 16.1.1; not a 2026 binary port.
+Maintainer: soum91
+Author: soum91
+Section: Tweaks
+Depends: mobilesubstrate
+Conflicts: com.liam.chatgbefree
+Architecture: iphoneos-arm64
+Version: 0.1.0
+Installed-Size: 264
+Filename: debs/com.soum91.chatgptlegacy16_0.1.0_32e6102c049e.deb
+Size: 70602
+MD5sum: 4173fe430afb1cace28c4835798fbb33
+SHA256: 32e6102c049e0e3a512ae8c9b8c418b142c1bfeafaf9d4ea9672b67d656e7e9b
+
 Package: com.soum91.daybreak.tweak
 Name: Daybreak (Dopamine)
 Description: Hourly calendar wake checks, native one-day Apple Sleep overrides and optional status notifications for iOS 16 Dopamine. Second-iPhone and Watch alarm sync are not guaranteed.

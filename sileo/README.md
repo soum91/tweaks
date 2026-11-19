@@ -49,3 +49,7 @@ if you use the browser `.deb`. Its two tweaks are included in this catalog.
 This is currently an unsigned APT source over HTTPS. APT repository signing is
 separate from the existing signatures inside the jailbreak packages. The public
 files are checked after publication; physical Sileo source migration is unverified.
+
+## ChatGPT Legacy 16 0.1.0 experimental
+
+The rootless package `com.soum91.chatgptlegacy16` extends a separately installed official ChatGPT 1.2024.200 client. It does not install ChatGPT, does not convert the provided 2023 app or 2026 binary, and has **not been device tested**. Review [the compatibility documentation](../projects/chatgpt16/README.md) before installation.
