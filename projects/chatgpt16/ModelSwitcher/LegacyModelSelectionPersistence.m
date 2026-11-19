@@ -99,7 +99,12 @@ static BOOL CGBScanViewForSelectedModel(UIView *view, UIWindow *window) {
 
 static BOOL CGBPersistSelectedModelFromNavigationArea(void) {
     UIApplication *application = UIApplication.sharedApplication;
-    NSArray<UIWindow *> *windows = application.windows;
+    NSMutableArray<UIWindow *> *windows = [NSMutableArray array];
+    for (UIScene *scene in application.connectedScenes) {
+        if ([scene isKindOfClass:UIWindowScene.class]) {
+            [windows addObjectsFromArray:((UIWindowScene *)scene).windows];
+        }
+    }
     for (UIWindow *window in [windows reverseObjectEnumerator]) {
         if (window.hidden || window.alpha < 0.01 || !window.rootViewController) {
             continue;
