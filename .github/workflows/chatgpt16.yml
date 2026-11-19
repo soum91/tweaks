@@ -88,8 +88,9 @@ jobs:
           test "$version" = "0.1.0"
           test "$maintainer" = "soum91"
           test "$author" = "soum91"
-          dpkg-deb -c "$deb" | grep -q 'ChatGBeFree.dylib'
-          dpkg-deb -c "$deb" | grep -q 'ChatGBeFree.plist'
+          dpkg-deb -c "$deb" > /tmp/chatgpt-package-contents.txt
+          grep -q 'ChatGBeFree.dylib' /tmp/chatgpt-package-contents.txt
+          grep -q 'ChatGBeFree.plist' /tmp/chatgpt-package-contents.txt
           tag="chatgptlegacy16-v0.1.0"
           if gh release view "$tag" >/dev/null 2>&1; then
             echo "::notice::Release $tag already exists; refusing duplicate publication"
