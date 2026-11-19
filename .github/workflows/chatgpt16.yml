@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   rootless-build:
@@ -48,3 +48,107 @@ jobs:
           name: chatgptlegacy16-rootless-unverified
           path: projects/chatgpt16/packages/*.deb
           if-no-files-found: error
+
+  publish-experimental:
+    name: Publish experimental ChatGPT Legacy 16 Sileo package
+    needs: rootless-build
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    concurrency:
+      group: chatgptlegacy16-publish
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/download-artifact@v4
+        with:
+          name: chatgptlegacy16-rootless-unverified
+          path: build-dist
+      - name: Verify build artifact and publish experimental release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_SHA: ${{ github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t packages < <(find build-dist -type f -name '*.deb')
+          test "${#packages[@]}" -eq 1
+          deb="${packages[0]}"
+          package="$(dpkg-deb -f "$deb" Package)"
+          architecture="$(dpkg-deb -f "$deb" Architecture)"
+          version="$(dpkg-deb -f "$deb" Version)"
+          maintainer="$(dpkg-deb -f "$deb" Maintainer)"
+          author="$(dpkg-deb -f "$deb" Author)"
+          test "$package" = "com.soum91.chatgptlegacy16"
+          test "$architecture" = "iphoneos-arm64"
+          test "$version" = "0.1.0"
+          test "$maintainer" = "soum91"
+          test "$author" = "soum91"
+          dpkg-deb -c "$deb" | grep -q 'ChatGBeFree.dylib'
+          dpkg-deb -c "$deb" | grep -q 'ChatGBeFree.plist'
+          tag="chatgptlegacy16-v$version"
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo "::notice::Release $tag already exists; refusing duplicate publication"
+            exit 0
+          fi
+          git config user.name "soum91 release automation"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git pull --ff-only origin main
+          dest="sileo/local/${package}_${version}_iphoneos-arm64.deb"
+          test ! -e "$dest" || { echo "::error::Package version already exists. Increment version before rebuilding."; exit 1; }
+          cp "$deb" "$dest"
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path("sileo/sources.json")
+          data=json.loads(p.read_text())
+          assert data["schema_version"] == 1
+          assert all("com.soum91.chatgptlegacy16" not in src["packages"] for src in data["sources"]), "Version already listed"
+          data["sources"].append({
+              "name": "ChatGPT Legacy 16 (experimental)",
+              "local_deb": "sileo/local/com.soum91.chatgptlegacy16_0.1.0_iphoneos-arm64.deb",
+              "packages": ["com.soum91.chatgptlegacy16"]
+          })
+          p.write_text(json.dumps(data, indent=2)+"\n")
+          p=Path("sileo/README.md")
+          p.write_text(p.read_text()+"\n## ChatGPT Legacy 16 0.1.0 experimental\n\nThe rootless package `com.soum91.chatgptlegacy16` extends a separately installed official ChatGPT 1.2024.200 client. It does not install ChatGPT, does not convert the provided 2023 app or 2026 binary, and has **not been device tested**. Review [the compatibility documentation](../projects/chatgpt16/README.md) before installation.\n")
+          p=Path("CHANGELOG.md")
+          text=p.read_text()
+          text=text.replace("## Unreleased (ChatGPT Legacy 16 native bridge source, 2026-11-19)",
+                            "## [chatgptlegacy16-v0.1.0] - 2026-11-19 (experimental rootless build; device unverified)")
+          p.write_text(text)
+          PY
+          python3 scripts/build_tweaks_repo.py
+          python3 -m unittest discover -s tests -p 'test_tweaks_repo.py' -v
+          python3 scripts/check_version_ui.py
+          python3 - <<'PY'
+          import json, hashlib
+          from pathlib import Path
+          source=json.loads(Path("sileo/catalog.json").read_text())
+          matches=[p for p in source["packages"] if p["package"]=="com.soum91.chatgptlegacy16"]
+          assert len(matches)==1, matches
+          record=matches[0]
+          assert record["version"]=="0.1.0"
+          assert hashlib.sha256((Path("sileo")/record["filename"]).read_bytes()).hexdigest()==record["sha256"]
+          print("Sileo publication verified:", record["filename"])
+          PY
+          git add sileo CHANGELOG.md
+          git commit -m "release(chatgpt16): publish rootless 0.1.0 experimental package with verified Sileo index [catalog only]"
+          git push origin HEAD:main
+          cat > /tmp/chatgpt-legacy-notes.md <<'EOF'
+          ## ChatGPT Legacy 16 0.1.0 (experimental prerelease)
+
+          **Native jailbreak compatibility tweak, not a full ChatGPT IPA or a backport of ChatGPT 1.2026.314.**
+
+          - Rootless arm64 package for iOS 16.1.1 and Dopamine. Adds native-model, voice, generated-image and copying compatibility bridges to a separately installed *official ChatGPT 1.2024.200* client.
+          - GitHub Actions compilation, package ID/architecture, payload, and Sileo index checks passed before publication.
+          - Imported GPLv3 upstream ChatGBeFree v2.4.0 source with attribution. iOS 16 SDK audio-session naming and window-scene fixes are included.
+          - **Not physically device tested.** Sign-in, model switching, voice, images and chat are not guaranteed. Does not target the user's ChatGPT 1.2023.23 IPA. Do not install on a non-jailbroken phone.
+          - Do not install simultaneously with `com.liam.chatgbefree`.
+          - Source and technical limitations: https://github.com/soum91/tweaks/tree/main/projects/chatgpt16
+
+          Add the shared Sileo source `https://raw.githubusercontent.com/soum91/tweaks/main/sileo/` or download this unsigned-APT-distributed rootless .deb directly.
+          EOF
+          gh release create "$tag" "$deb" --repo "${GITHUB_REPOSITORY}" --target "$SOURCE_SHA" --prerelease --title "ChatGPT Legacy 16 $version (experimental)" --notes-file /tmp/chatgpt-legacy-notes.md
