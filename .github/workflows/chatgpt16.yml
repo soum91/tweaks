@@ -29,7 +29,7 @@ jobs:
       - name: Compile and package rootless tweak
         env:
           THEOS: ${{ runner.temp }}/theos
-        run: make -C projects/chatgpt16 clean package
+        run: make -C projects/chatgpt16 clean package FINALPACKAGE=1
       - name: Verify package metadata and retained GPL source
         run: |
           python3 - <<'PY'
@@ -85,12 +85,12 @@ jobs:
           dpkg-deb -c "$deb" | tail -n 12
           test "$package" = "com.soum91.chatgptlegacy16"
           test "$architecture" = "iphoneos-arm64"
-          test "$version" = "0.1.0"
+          test "$version" = "0.1.0-1"
           test "$maintainer" = "soum91"
           test "$author" = "soum91"
           dpkg-deb -c "$deb" | grep -q 'ChatGBeFree.dylib'
           dpkg-deb -c "$deb" | grep -q 'ChatGBeFree.plist'
-          tag="chatgptlegacy16-v$version"
+          tag="chatgptlegacy16-v0.1.0"
           if gh release view "$tag" >/dev/null 2>&1; then
             echo "::notice::Release $tag already exists; refusing duplicate publication"
             exit 0
@@ -110,7 +110,7 @@ jobs:
           assert all("com.soum91.chatgptlegacy16" not in src["packages"] for src in data["sources"]), "Version already listed"
           data["sources"].append({
               "name": "ChatGPT Legacy 16 (experimental)",
-              "local_deb": "sileo/local/com.soum91.chatgptlegacy16_0.1.0_iphoneos-arm64.deb",
+              "local_deb": "sileo/local/com.soum91.chatgptlegacy16_0.1.0-1_iphoneos-arm64.deb",
               "packages": ["com.soum91.chatgptlegacy16"]
           })
           p.write_text(json.dumps(data, indent=2)+"\n")
@@ -132,7 +132,7 @@ jobs:
           matches=[p for p in source["packages"] if p["package"]=="com.soum91.chatgptlegacy16"]
           assert len(matches)==1, matches
           record=matches[0]
-          assert record["version"]=="0.1.0"
+          assert record["version"]=="0.1.0-1"
           assert hashlib.sha256((Path("sileo")/record["filename"]).read_bytes()).hexdigest()==record["sha256"]
           print("Sileo publication verified:", record["filename"])
           PY
@@ -153,4 +153,4 @@ jobs:
 
           Add the shared Sileo source `https://raw.githubusercontent.com/soum91/tweaks/main/sileo/` or download this unsigned-APT-distributed rootless .deb directly.
           EOF
-          gh release create "$tag" "$deb" --repo "${GITHUB_REPOSITORY}" --target "$SOURCE_SHA" --prerelease --title "ChatGPT Legacy 16 $version (experimental)" --notes-file /tmp/chatgpt-legacy-notes.md
+          gh release create "$tag" "$deb" --repo "${GITHUB_REPOSITORY}" --target "$SOURCE_SHA" --prerelease --title "ChatGPT Legacy 16 0.1.0 (experimental)" --notes-file /tmp/chatgpt-legacy-notes.md
