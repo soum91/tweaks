@@ -81,6 +81,8 @@ jobs:
           version="$(dpkg-deb -f "$deb" Version)"
           maintainer="$(dpkg-deb -f "$deb" Maintainer)"
           author="$(dpkg-deb -f "$deb" Author)"
+          printf "Package metadata: id=%s architecture=%s version=%s maintainer=%s author=%s\n" "$package" "$architecture" "$version" "$maintainer" "$author"
+          dpkg-deb -c "$deb" | tail -n 12
           test "$package" = "com.soum91.chatgptlegacy16"
           test "$architecture" = "iphoneos-arm64"
           test "$version" = "0.1.0"
