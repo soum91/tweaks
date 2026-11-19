@@ -85,7 +85,7 @@ jobs:
           dpkg-deb -c "$deb" | tail -n 12
           test "$package" = "com.soum91.chatgptlegacy16"
           test "$architecture" = "iphoneos-arm64"
-          test "$version" = "0.1.0-1"
+          test "$version" = "0.1.0"
           test "$maintainer" = "soum91"
           test "$author" = "soum91"
           dpkg-deb -c "$deb" | grep -q 'ChatGBeFree.dylib'
@@ -110,7 +110,7 @@ jobs:
           assert all("com.soum91.chatgptlegacy16" not in src["packages"] for src in data["sources"]), "Version already listed"
           data["sources"].append({
               "name": "ChatGPT Legacy 16 (experimental)",
-              "local_deb": "sileo/local/com.soum91.chatgptlegacy16_0.1.0-1_iphoneos-arm64.deb",
+              "local_deb": "sileo/local/com.soum91.chatgptlegacy16_0.1.0_iphoneos-arm64.deb",
               "packages": ["com.soum91.chatgptlegacy16"]
           })
           p.write_text(json.dumps(data, indent=2)+"\n")
@@ -132,7 +132,7 @@ jobs:
           matches=[p for p in source["packages"] if p["package"]=="com.soum91.chatgptlegacy16"]
           assert len(matches)==1, matches
           record=matches[0]
-          assert record["version"]=="0.1.0-1"
+          assert record["version"]=="0.1.0"
           assert hashlib.sha256((Path("sileo")/record["filename"]).read_bytes()).hexdigest()==record["sha256"]
           print("Sileo publication verified:", record["filename"])
           PY
