@@ -35,3 +35,7 @@ skips only the unchanged Daybreak compilation job, while catalog/version CI stil
 ## Canonical tweak source repository (mandatory)
 
 All future iOS jailbreak tweaks and tweak-related development must live in this repository (`soum91/tweaks`) under a dedicated project directory (for example `projects/<tweak-name>/`). Keep source, build workflows, packaging metadata, documentation, and release provenance here. Do not create separate per-tweak GitHub repositories. Existing standalone tweaks should be migrated without losing source/history, package identities, working release workflows, or compatibility feeds. The `watchlink` project is designated for consolidation under `projects/watchlink/`. This supersedes the earlier instruction to keep tweak implementations in separate repositories. Both Claude and Codex must enforce this rule. Do not publish a migrated release until its build and distribution paths are verified.
+
+## Mandatory cross-project file picker standard
+
+**RELEASE-BLOCKING:** Follow [MANDATORY_FILE_PICKER.md](https://github.com/soum91/tweaks/blob/main/MANDATORY_FILE_PICKER.md) and this repository's AGENTS.md for every existing and future importer, exporter, signer, browser and file picker. A picker that merely opens but ignores a file tap is broken. Require end-to-end real-device selection/import verification before claiming a fix; preserve security scope and asynchronous staged files; report actionable failures. Propagate this requirement to every new app. Do not weaken existing policies.
